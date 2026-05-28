@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>삼각형 넓이 탐구실</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="app">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">5학년 수학 조작 활동</p>
+          <h1>삼각형 넓이 탐구실</h1>
+        </div>
+      </header>
+
+      <section class="workspace" aria-label="삼각형 조작 공간">
+        <aside class="panel">
+          <section>
+            <h2>삼각형 만들기</h2>
+            <p>꼭짓점을 움직여 여러 모양의 삼각형을 만들고 조각을 꺼내 보세요.</p>
+            <div class="mini-board">
+              <svg id="sourceSvg" viewBox="0 0 260 190" role="img" aria-label="꼭짓점을 움직일 수 있는 삼각형">
+                <defs>
+                  <pattern id="miniGrid" width="20" height="20" patternUnits="userSpaceOnUse">
+                    <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#d9e2d2" stroke-width="1" />
+                  </pattern>
+                </defs>
+                <rect width="260" height="190" fill="url(#miniGrid)" />
+                <line id="heightLine" class="height-line" x1="0" y1="0" x2="0" y2="0" />
+                <polygon id="sourceTriangle" class="source-triangle" points="" />
+                <line id="baseLine" class="base-line" x1="0" y1="0" x2="0" y2="0" />
+                <g id="vertexHandles"></g>
+                <text id="baseLabel" class="svg-label" x="0" y="0">밑변</text>
+                <text id="heightLabel" class="svg-label" x="0" y="0">높이</text>
+              </svg>
+            </div>
+          </section>
+
+          <section class="controls">
+            <h2>도구</h2>
+            <button id="addPieceBtn" class="primary">조각 꺼내기</button>
+            <button id="cloneBtn">선택 조각 복제</button>
+            <button id="cutBtn">선택 조각 자르기</button>
+            <div class="button-row">
+              <button id="rotateLeftBtn" aria-label="왼쪽으로 돌리기">↶</button>
+              <button id="rotateRightBtn" aria-label="오른쪽으로 돌리기">↷</button>
+              <button id="flipBtn">뒤집기</button>
+            </div>
+            <button id="deleteBtn" class="danger">선택 조각 지우기</button>
+          </section>
+
+          <section class="measure">
+            <h2>관찰값</h2>
+            <dl>
+              <div>
+                <dt>밑변</dt>
+                <dd id="baseValue">0</dd>
+              </div>
+              <div>
+                <dt>높이</dt>
+                <dd id="heightValue">0</dd>
+              </div>
+              <div>
+                <dt>평행사변형 넓이</dt>
+                <dd id="rectValue">0</dd>
+              </div>
+              <div>
+                <dt>삼각형 넓이</dt>
+                <dd id="areaValue">0</dd>
+              </div>
+            </dl>
+          </section>
+        </aside>
+
+        <section class="stage-wrap">
+          <div class="stage-head">
+            <div>
+              <h2>조작판</h2>
+              <p>조각을 끌고 돌려 평행사변형을 만들어 보세요.</p>
+            </div>
+            <div class="stage-actions">
+              <button id="guideBtn">평행사변형 틀</button>
+              <button id="resetBtn">처음으로</button>
+            </div>
+          </div>
+          <div id="stage" class="stage" tabindex="0" aria-label="삼각형 조각을 움직이는 조작판">
+            <svg id="stageSvg" class="stage-svg"></svg>
+            <div id="hint" class="hint">조각 꺼내기 또는 선택 조각 복제를 눌러 시작하세요.</div>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
