@@ -214,6 +214,25 @@ p {
   gap: 8px;
 }
 
+.measure-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.measure-head h2 {
+  margin-bottom: 0;
+}
+
+.unit-toggle {
+  min-height: 30px;
+  padding: 0 10px;
+  font-size: 12px;
+  border-radius: 6px;
+  box-shadow: 0 2px 0 #c8c1a6;
+}
+
 .measure dl {
   display: grid;
   gap: 8px;
@@ -236,6 +255,16 @@ p {
 .measure dd {
   margin: 0;
   font-weight: 900;
+}
+
+.measure dd.flash {
+  color: var(--green-dark);
+  transition: color 0s;
+}
+
+.measure dd.flash-fade {
+  color: var(--ink);
+  transition: color 0.6s ease;
 }
 
 .stage-wrap {

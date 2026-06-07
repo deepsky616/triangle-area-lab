@@ -25,6 +25,7 @@ let selectedId = null;
 let nextId = 1;
 let showGuide = false;
 let guideState = null;
+let unitCm = false; // false = 칸, true = cm
 let sourceDragIndex = null;
 let pieceDrag = null;
 let guideDrag = null;
@@ -83,10 +84,28 @@ function updateSource() {
   );
 
   const { base, height, area } = getBaseHeight();
-  baseValue.textContent = `${Math.round(base)} 칸`;
-  heightValue.textContent = `${Math.round(height)} 칸`;
-  rectValue.textContent = `${Math.round(base * height).toLocaleString()} 칸²`;
-  areaValue.textContent = `${Math.round(area).toLocaleString()} 칸²`;
+  const GRID = 20; // 소스 SVG 격자 1칸 = 20px = 1 cm
+  if (unitCm) {
+    baseValue.textContent = `${(base / GRID).toFixed(1)} cm`;
+    heightValue.textContent = `${(height / GRID).toFixed(1)} cm`;
+    rectValue.textContent = `${((base * height) / (GRID * GRID)).toFixed(1)} cm²`;
+    areaValue.textContent = `${(area / (GRID * GRID)).toFixed(1)} cm²`;
+  } else {
+    baseValue.textContent = `${Math.round(base)} 칸`;
+    heightValue.textContent = `${Math.round(height)} 칸`;
+    rectValue.textContent = `${Math.round(base * height).toLocaleString()} 칸²`;
+    areaValue.textContent = `${Math.round(area).toLocaleString()} 칸²`;
+  }
+
+  // 값이 바뀔 때 잠깐 초록색으로 하이라이트
+  [baseValue, heightValue, rectValue, areaValue].forEach((el) => {
+    el.classList.remove("flash", "flash-fade");
+    void el.offsetWidth; // reflow로 transition 리셋
+    el.classList.add("flash");
+    requestAnimationFrame(() => {
+      el.classList.replace("flash", "flash-fade");
+    });
+  });
 }
 
 function normalize(points) {
@@ -366,6 +385,12 @@ stageSvg.addEventListener("pointermove", (event) => {
 stageSvg.addEventListener("pointerup", () => {
   guideDrag = null;
   pieceDrag = null;
+});
+
+document.querySelector("#unitToggle").addEventListener("click", () => {
+  unitCm = !unitCm;
+  document.querySelector("#unitToggle").textContent = unitCm ? "칸 보기" : "cm 보기";
+  updateSource();
 });
 
 document.querySelector("#addPieceBtn").addEventListener("click", addPiece);
