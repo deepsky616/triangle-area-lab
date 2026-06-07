@@ -259,6 +259,28 @@ p {
   margin-bottom: 0;
 }
 
+.stage-hint summary {
+  cursor: pointer;
+  color: var(--green-dark);
+  font-size: 13px;
+  font-weight: 800;
+  user-select: none;
+  list-style: none;
+}
+
+.stage-hint summary::-webkit-details-marker {
+  display: none;
+}
+
+.stage-hint[open] summary {
+  margin-bottom: 4px;
+}
+
+.stage-hint p {
+  margin: 0;
+  font-size: 14px;
+}
+
 .stage-actions {
   display: flex;
   align-items: center;
