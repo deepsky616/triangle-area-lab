@@ -103,6 +103,7 @@ function makePiece(points, x = 120, y = 120) {
     y,
     rotation: 0,
     flip: 1,
+    cut: false,
     color: palette[(nextId - 2) % palette.length],
   };
 }
@@ -136,17 +137,23 @@ function cloneSelected() {
 
 function cutSelected() {
   const piece = selectedPiece();
-  if (!piece || piece.points.length !== 3) return;
+  if (!piece || piece.cut || piece.points.length !== 3) return;
   const [a, b, c] = piece.points;
-  const mid = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
-  const left = makePiece([a, mid, c], piece.x, piece.y);
-  const right = makePiece([mid, b, c], piece.x + 26, piece.y + 18);
-  left.rotation = piece.rotation;
-  right.rotation = piece.rotation;
-  left.flip = piece.flip;
-  right.flip = piece.flip;
-  pieces = pieces.filter((item) => item.id !== piece.id).concat(left, right);
-  selectedId = right.id;
+  // 중선(midsegment): AC의 중점 d, BC의 중점 e → de는 밑변 AB에 평행
+  const d = { x: (a.x + c.x) / 2, y: (a.y + c.y) / 2 };
+  const e = { x: (b.x + c.x) / 2, y: (b.y + c.y) / 2 };
+  // 아래 조각: 사다리꼴 (a, b, e, d)
+  const trapezoid = makePiece([a, b, e, d], piece.x, piece.y);
+  // 위 조각: 작은 삼각형 (d, e, c) → 180° 돌리면 사다리꼴과 붙어 평행사변형
+  const topTri = makePiece([d, e, c], piece.x + 24, piece.y - 24);
+  trapezoid.rotation = piece.rotation;
+  topTri.rotation = piece.rotation;
+  trapezoid.flip = piece.flip;
+  topTri.flip = piece.flip;
+  trapezoid.cut = true;
+  topTri.cut = true;
+  pieces = pieces.filter((item) => item.id !== piece.id).concat(trapezoid, topTri);
+  selectedId = topTri.id;
   renderStage();
 }
 
@@ -225,21 +232,28 @@ function renderStage() {
     polygon.dataset.id = piece.id;
     stageSvg.append(polygon);
 
-    if (piece.points.length === 3 && piece.id === selectedId) {
+    // 아직 자르지 않은 삼각형에만 중선 미리보기 표시
+    if (piece.points.length === 3 && piece.id === selectedId && !piece.cut) {
       const [a, b, c] = piece.points;
-      const cut = document.createElementNS("http://www.w3.org/2000/svg", "line");
-      cut.setAttribute("class", "cut-line");
-      cut.setAttribute("x1", (a.x + b.x) / 2);
-      cut.setAttribute("y1", (a.y + b.y) / 2);
-      cut.setAttribute("x2", c.x);
-      cut.setAttribute("y2", c.y);
-      cut.setAttribute(
+      const d = { x: (a.x + c.x) / 2, y: (a.y + c.y) / 2 };
+      const e = { x: (b.x + c.x) / 2, y: (b.y + c.y) / 2 };
+      const cutLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      cutLine.setAttribute("class", "cut-line");
+      cutLine.setAttribute("x1", d.x);
+      cutLine.setAttribute("y1", d.y);
+      cutLine.setAttribute("x2", e.x);
+      cutLine.setAttribute("y2", e.y);
+      cutLine.setAttribute(
         "transform",
         `translate(${piece.x} ${piece.y}) rotate(${piece.rotation}) scale(${piece.flip} 1)`,
       );
-      stageSvg.append(cut);
+      stageSvg.append(cutLine);
     }
   });
+
+  // 자르기 버튼: 선택된 조각이 삼각형이고 아직 자르지 않은 경우만 활성화
+  const sp = selectedPiece();
+  document.querySelector("#cutBtn").disabled = !sp || sp.cut || sp.points.length !== 3;
 
   // Guide handles (on top of pieces so always clickable)
   if (showGuide && guideState) {

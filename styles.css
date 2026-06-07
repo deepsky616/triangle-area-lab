@@ -50,6 +50,13 @@ button:active {
   box-shadow: 0 1px 0 #c8c1a6;
 }
 
+button:disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
 button.primary {
   color: white;
   border-color: var(--green-dark);
