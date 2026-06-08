@@ -16,9 +16,9 @@ const areaValue = document.querySelector("#areaValue");
 
 const palette = ["#f7c948", "#72d6c9", "#f18f7e", "#9bb7ff", "#c8df72", "#f6a6d8"];
 let triangle = [
-  { x: 80, y: 140 },
-  { x: 180, y: 140 },
-  { x: 130, y: 60 },
+  { x: 80, y: 160 },
+  { x: 180, y: 160 },
+  { x: 120, y: 80 },
 ];
 let pieces = [];
 let selectedId = null;
@@ -84,18 +84,18 @@ function updateSource() {
   );
 
   const { base, height, area } = getBaseHeight();
-  const GRID = 20; // 소스 SVG 격자 1칸 = 20px = 1 cm
-  if (unitCm) {
-    baseValue.textContent = `${(base / GRID).toFixed(1)} cm`;
-    heightValue.textContent = `${(height / GRID).toFixed(1)} cm`;
-    rectValue.textContent = `${((base * height) / (GRID * GRID)).toFixed(1)} cm²`;
-    areaValue.textContent = `${(area / (GRID * GRID)).toFixed(1)} cm²`;
-  } else {
-    baseValue.textContent = `${Math.round(base)} 칸`;
-    heightValue.textContent = `${Math.round(height)} 칸`;
-    rectValue.textContent = `${Math.round(base * height).toLocaleString()} 칸²`;
-    areaValue.textContent = `${Math.round(area).toLocaleString()} 칸²`;
-  }
+  // 1칸 = 20px = 1cm → 모든 값을 격자 단위로 변환
+  const GRID = 20;
+  const baseU = Math.round(base / GRID);
+  const heightU = Math.round(height / GRID);
+  const rectU = baseU * heightU;           // 항상 자연수
+  const areaU = rectU / 2;                 // heightU가 짝수이면 항상 자연수
+  const unit = unitCm ? "cm" : "칸";
+  const unit2 = unitCm ? "cm²" : "칸²";
+  baseValue.textContent = `${baseU} ${unit}`;
+  heightValue.textContent = `${heightU} ${unit}`;
+  rectValue.textContent = `${rectU} ${unit2}`;
+  areaValue.textContent = `${areaU} ${unit2}`;
 
   // 값이 바뀔 때 잠깐 초록색으로 하이라이트
   [baseValue, heightValue, rectValue, areaValue].forEach((el) => {
@@ -315,9 +315,12 @@ sourceSvg.addEventListener("pointerdown", (event) => {
 sourceSvg.addEventListener("pointermove", (event) => {
   if (sourceDragIndex === null) return;
   const point = svgPoint(sourceSvg, event);
+  // x: 20px 격자 스냅 (1cm 단위)
+  // y: 40px 격자 스냅 → 높이가 항상 짝수 cm → 넓이(밑변×높이÷2)가 자연수 보장
+  const SNAP_X = 20, SNAP_Y = 40;
   triangle[sourceDragIndex] = {
-    x: Math.max(20, Math.min(240, point.x)),
-    y: Math.max(24, Math.min(166, point.y)),
+    x: Math.max(20, Math.min(240, Math.round(point.x / SNAP_X) * SNAP_X)),
+    y: Math.max(40, Math.min(160, Math.round(point.y / SNAP_Y) * SNAP_Y)),
   };
   updateSource();
 });
