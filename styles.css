@@ -163,8 +163,9 @@ p {
 
 #sourceSvg {
   display: block;
-  width: 100%;
-  height: auto;
+  width: 260px;
+  height: 190px;
+  max-width: 100%;
   touch-action: none;
 }
 
@@ -325,7 +326,7 @@ p {
     linear-gradient(90deg, rgba(32, 49, 43, 0.08) 1px, transparent 1px),
     linear-gradient(rgba(32, 49, 43, 0.08) 1px, transparent 1px),
     #fffdf6;
-  background-size: 32px 32px;
+  background-size: 20px 20px;
   touch-action: none;
 }
 
